@@ -1,24 +1,48 @@
-import logo from './logo.svg';
+import React,{useEffect,useState} from 'react'
+import Axios from 'axios'
+import Gallery from './Gallery';
 import './App.css';
 
-function App() {
+  const apiKey = "636e1481b4f3c446d26b8eb6ebfe7127";
+  const App =()=>{
+    const [data,setData] = useState([]);
+    const [search,setSearch]=useState("");
+    useEffect(()=>{
+
+    },[])
+    const changeHandler =(e)=>{
+      setSearch(e.target.value)
+    }
+    const submitHandler =(e)=>{
+      e.preventDefault();
+      Axios.get(
+             `https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=${apiKey}&tags=${search}&per_page=24&format=json&nojsoncallback=1`
+
+      ).then(response=>{
+        setData(response.data.photos.photo)
+      })
+      .catch(error=>{
+        console.log('encountered an error with fetch and parsing data',error);
+      })
+
+    }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <>
+    <div>
+      <center>
+        <h2>Gallery snapshot</h2><br></br>
+        <form onSubmit={submitHandler}>
+          <input size="30" type="text" onChange={changeHandler} value={search}/><br/><br/>
+          <input type="submit" name="search"/>
+        </form>
+        <br/>
+
+        {data.length>=1?<Gallery data={data}/>:<h4>no Image loaded</h4>}
+                </center>
+
     </div>
+    </>
+
   );
 }
 
